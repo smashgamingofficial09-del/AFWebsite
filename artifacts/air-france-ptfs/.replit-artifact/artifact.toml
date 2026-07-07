@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "Air France PTFS"
+version = "1.0.0"
+id = "artifacts/air-france-ptfs"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20063
+
+[services.development]
+run = "pnpm --filter @workspace/air-france-ptfs run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/air-france-ptfs", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/air-france-ptfs/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20063"
+BASE_PATH = "/"

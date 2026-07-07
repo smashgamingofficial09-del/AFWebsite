@@ -3,20 +3,27 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Air France PTFS API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: flights
+    description: Flight operations
+  - name: bookings
+    description: Booking operations
+  - name: profile
+    description: User profile operations
+  - name: admin
+    description: Admin operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +31,232 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /flights:
+    get:
+      operationId: listFlights
+      tags: [flights]
+      summary: List all available flights
+      responses:
+        "200":
+          description: List of flights
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Flight"
+
+  /flights/{id}:
+    get:
+      operationId: getFlight
+      tags: [flights]
+      summary: Get flight details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Flight details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flight"
+        "404":
+          description: Not found
+
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: List all bookings for the current user
+      responses:
+        "200":
+          description: List of bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Book a flight
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookingInput"
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      tags: [bookings]
+      summary: Get booking details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Booking details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+        "404":
+          description: Not found
+    delete:
+      operationId: cancelBooking
+      tags: [bookings]
+      summary: Cancel a booking
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Booking cancelled
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Booking"
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get user profile
+      responses:
+        "200":
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+
+  /admin/stats:
+    get:
+      operationId: getAdminStats
+      tags: [admin]
+      summary: Get admin dashboard statistics
+      responses:
+        "200":
+          description: Admin statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminStats"
+
+  /admin/flights:
+    post:
+      operationId: createFlight
+      tags: [admin]
+      summary: Create a new flight (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlightInput"
+      responses:
+        "201":
+          description: Flight created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flight"
+
+  /admin/flights/{id}:
+    patch:
+      operationId: updateFlight
+      tags: [admin]
+      summary: Update a flight (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlightUpdate"
+      responses:
+        "200":
+          description: Flight updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flight"
+    delete:
+      operationId: deleteFlight
+      tags: [admin]
+      summary: Delete a flight (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Flight deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flight"
+
+  /admin/bookings:
+    get:
+      operationId: listAllBookings
+      tags: [admin]
+      summary: List all bookings (admin)
+      responses:
+        "200":
+          description: All bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Booking"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +267,162 @@ components:
       required:
         - status
 
+    Flight:
+      type: object
+      required: [id, flightNumber, origin, destination, departureTime, arrivalTime, aircraft, status, seats, bookedSeats, price]
+      properties:
+        id:
+          type: integer
+        flightNumber:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        departureTime:
+          type: string
+        arrivalTime:
+          type: string
+        aircraft:
+          type: string
+        status:
+          type: string
+          enum: [scheduled, boarding, departed, arrived, cancelled]
+        seats:
+          type: integer
+        bookedSeats:
+          type: integer
+        price:
+          type: number
+        imageUrl:
+          type: ["string", "null"]
+
+    FlightInput:
+      type: object
+      required: [flightNumber, origin, destination, departureTime, arrivalTime, aircraft, seats, price]
+      properties:
+        flightNumber:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        departureTime:
+          type: string
+        arrivalTime:
+          type: string
+        aircraft:
+          type: string
+        seats:
+          type: integer
+        price:
+          type: number
+        imageUrl:
+          type: string
+
+    FlightUpdate:
+      type: object
+      properties:
+        flightNumber:
+          type: string
+        origin:
+          type: string
+        destination:
+          type: string
+        departureTime:
+          type: string
+        arrivalTime:
+          type: string
+        aircraft:
+          type: string
+        status:
+          type: string
+          enum: [scheduled, boarding, departed, arrived, cancelled]
+        seats:
+          type: integer
+        price:
+          type: number
+        imageUrl:
+          type: string
+
+    Booking:
+      type: object
+      required: [id, flightId, passengerName, seatClass, status, createdAt]
+      properties:
+        id:
+          type: integer
+        flightId:
+          type: integer
+        flight:
+          $ref: "#/components/schemas/Flight"
+        passengerName:
+          type: string
+        seatClass:
+          type: string
+          enum: [economy, business, first]
+        status:
+          type: string
+          enum: [confirmed, cancelled, pending]
+        createdAt:
+          type: string
+
+    BookingInput:
+      type: object
+      required: [flightId, passengerName, seatClass]
+      properties:
+        flightId:
+          type: integer
+        passengerName:
+          type: string
+        seatClass:
+          type: string
+          enum: [economy, business, first]
+
+    Profile:
+      type: object
+      required: [id, username, role, joinedAt, totalFlights, memberSince]
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
+          type: string
+          enum: [passenger, crew, admin]
+        joinedAt:
+          type: string
+        totalFlights:
+          type: integer
+        memberSince:
+          type: string
+        avatarUrl:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+
+    ProfileUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        bio:
+          type: string
+        avatarUrl:
+          type: string
+
+    AdminStats:
+      type: object
+      required: [totalFlights, totalBookings, activePassengers, scheduledFlights, cancelledFlights, totalRevenue]
+      properties:
+        totalFlights:
+          type: integer
+        totalBookings:
+          type: integer
+        activePassengers:
+          type: integer
+        scheduledFlights:
+          type: integer
+        cancelledFlights:
+          type: integer
+        totalRevenue:
+          type: number
