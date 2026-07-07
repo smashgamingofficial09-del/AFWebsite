@@ -156,7 +156,7 @@ export function Layout({ children }: { children: ReactNode }) {
             <h4 className="font-serif text-lg mb-6 font-semibold">Connect</h4>
             <ul className="space-y-3">
               <li><a href="#" className="text-sm text-primary-foreground/70 hover:text-accent transition-colors">Roblox Group</a></li>
-              <li><a href="#" className="text-sm text-primary-foreground/70 hover:text-accent transition-colors">Discord Server</a></li>
+              <li><a href="https://discord.gg/air-france-ptfs-1378004199266324480" target="_blank" rel="noopener noreferrer" className="text-sm text-primary-foreground/70 hover:text-accent transition-colors">Discord Server</a></li>
               <li><a href="#" className="text-sm text-primary-foreground/70 hover:text-accent transition-colors">PTFS Hub</a></li>
             </ul>
           </div>

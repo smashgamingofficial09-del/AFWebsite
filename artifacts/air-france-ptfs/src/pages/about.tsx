@@ -134,7 +134,9 @@ export default function About() {
             Fly with us first
           </Link>
           <a 
-            href="#" 
+            href="https://discord.gg/air-france-ptfs-1378004199266324480"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-transparent border border-primary text-primary px-8 py-4 font-medium tracking-wide hover:bg-primary/5 transition-colors"
           >
             Visit our Discord
